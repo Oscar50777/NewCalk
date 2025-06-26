@@ -17,19 +17,11 @@ export const DENSITY_MAP = {
   adhesive: [80]
 };
 
-export const PRINT_COSTS = {
-  Z: { costPerSheet: 15, setup: 300 },
-  E: { costPerSheet: 50, setup: 500 },
-  default: { costPerSheet: 2, setup: 10000 }
-};
-
-export const POSTPRESS_DEFAULTS = {
-  cutting: { cost: 1, setup: 300 },
-  lamination: { cost: 12, setup: 300 },
-  score: { cost: 2, setup: 300 },
-  folding: { cost: 1, setup: 300 },
-  diecut: { cost: 5, setup: 5000, stampCost: 5500 },
-  uvLacquer: { cost: 10, setup: 5000 },
-  embossing: { cost: 10, setup: 4500, klischeCost: 2000 },
-  assembly: { cost: 5, setup: 300 }
+export const FORMAT_LABELS = {
+  Z: "Цифра SRA3",
+  E: "Цифра B2",
+  A: "Офсет 50×70",
+  B: "Офсет 47×62",
+  R: "Офсет 47×65",
+  M: "Офсет 52×72"
 };
