@@ -6,7 +6,6 @@
 export function renderResultsTable(results, multiplier = 1) {
   const resultsTable = document.getElementById("resultsTable");
   resultsTable.innerHTML = "";
-
   if (!results.length) {
     const row = document.createElement("tr");
     row.innerHTML = `<td colspan="14">Нажмите «Рассчитать» для вывода результата</td>`;
@@ -85,6 +84,7 @@ export function renderSavedList(savedResults, markupPercent = 20) {
   }
 
   hideEmptyMessage();
+
   const markupFactor = (100 + markupPercent) / 100;
 
   savedResults.forEach((res, index) => {
@@ -115,7 +115,7 @@ export function renderSavedList(savedResults, markupPercent = 20) {
     `);
     listCost.appendChild(divCost);
 
-    // Цена продажи (+ кнопка +500)
+    // Цена продажи (+ кнопка)
     const divPrice = createSavedItem(`
       <strong>${title}${res.productSize}${multiplierText}</strong>, ${res.color}, 
       ${getPaperTypeLabel(res.paperType)} ${res.density} г/м²${postpressText} — ${res.quantity} шт → 
@@ -176,7 +176,6 @@ function hideEmptyMessage() {
 export function updateFormatButtons(width, height) {
   const currentW = width;
   const currentH = height;
-
   document.querySelectorAll("#formatButtons button").forEach(btn => {
     const btnText = btn.textContent.trim().match(/(\d+)×(\d+)/)?.[0] || "";
     btn.classList.remove("selected");
@@ -189,7 +188,6 @@ export function updateFormatButtons(width, height) {
 export function updateQuantityButtons(quantity) {
   const container = document.getElementById("quantityButtons");
   const quantities = [50, 100, 200, 300, 500, 1000, 3000, 5000];
-
   if (!container.children.length) {
     quantities.forEach(qty => {
       const btn = document.createElement("button");
@@ -290,6 +288,8 @@ export function calculateBrochureResult() {
     case "A5": divisor = 16; break;
     case "A4": divisor = 8; break;
     case "210x210": divisor = 12; break;
+    default:
+      divisor = 1;
   }
 
   const result = Math.ceil(value / divisor);
@@ -350,8 +350,8 @@ export function increasePrice(index, savedResults) {
 export function generatePriceListByFormatsWithSellingPrice(savedResults, markupPercent) {
   const container = document.getElementById("priceListWithPriceContainer");
   container.innerHTML = "";
-  const productType = selectedProductType || "Продукция";
 
+  const productType = selectedProductType || "Продукция";
   const width = Number(document.getElementById("width").value);
   const height = Number(document.getElementById("height").value);
   const sides = s;
@@ -366,6 +366,7 @@ export function generatePriceListByFormatsWithSellingPrice(savedResults, markupP
 
   const W = width + 4;
   const H = height + 4;
+
   const quantities = Array.from(document.querySelectorAll("#quantityButtons button"))
     .map(btn => Number(btn.dataset.qty || btn.textContent.replace(/\D+/g, "")))
     .filter(q => q > 0);
@@ -380,9 +381,11 @@ export function generatePriceListByFormatsWithSellingPrice(savedResults, markupP
   sheetFormats.forEach(sheet => {
     const printW = sheet.printArea.w;
     const printH = sheet.printArea.h;
+
     const v1 = Math.floor(printW / W) * Math.floor(printH / H);
     const v2 = Math.floor(printW / H) * Math.floor(printH / W);
     const N_opt = Math.max(v1, v2);
+
     if (N_opt === 0) return;
 
     const extraSheets = ["Z", "E"].includes(sheet.name) ? 3 : 250;
@@ -517,6 +520,7 @@ export function updatePaperOptions(paperType) {
     paperPricePerKg.style.display = "block";
     const densities = densityMap[paperType] || [];
     if (!densities.length) return;
+
     densities.forEach(d => {
       const btn = document.createElement("button");
       btn.textContent = d + " г/м²";
@@ -531,6 +535,7 @@ export function updatePaperOptions(paperType) {
       };
       optionsDiv.appendChild(btn);
     });
+
     if (optionsDiv.children.length) optionsDiv.children[0].click();
   }
 }
