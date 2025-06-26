@@ -1,0 +1,234 @@
+/* styles/main.css */
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 10px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+h2 {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.left,
+.right {
+  width: 100%;
+}
+
+label {
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+input[type="number"],
+select,
+button,
+textarea {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+  margin-top: 5px;
+}
+
+.format-buttons,
+.paper-type-buttons,
+.quantity-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.format-buttons button,
+.paper-type-buttons button,
+.quantity-buttons button {
+  padding: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.side-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.side-buttons button {
+  flex: 1 1 45%;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.selected {
+  background-color: #007BFF;
+  color: white;
+}
+
+table.result-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 15px;
+  overflow-x: auto;
+}
+
+table.result-table th,
+table.result-table td {
+  border: 1px solid #ccc;
+  padding: 6px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+table.result-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.saved-list {
+  margin-top: 20px;
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
+}
+
+.saved-item {
+  background: #f9f9f9;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.settings-panel {
+  display: none;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.sub-field {
+  margin-left: 15px;
+  margin-top: 5px;
+}
+
+.remember-btn {
+  padding: 4px 8px;
+  font-size: 12px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.remember-btn:hover {
+  background-color: #218838;
+}
+
+#statusMessage {
+  color: red;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+#productTypeButtons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 8px;
+  margin-top: 15px;
+}
+
+#productTypeButtons button {
+  padding: 6px 10px;
+  font-size: 12px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#productTypeButtons button.selected {
+  background-color: #007BFF;
+  color: white;
+}
+
+.hint {
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+}
+
+.multiplier-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.multiplier-control button {
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.multiplier-control input {
+  width: 80px;
+  text-align: center;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .remember-btn {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+
+  .side-buttons button {
+    font-size: 13px;
+    padding: 6px;
+  }
+
+  .format-buttons button,
+  .paper-type-buttons button,
+  .quantity-buttons button {
+    font-size: 12px;
+    padding: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  h2 {
+    font-size: 16px;
+  }
+
+  label {
+    font-size: 13px;
+  }
+
+  input[type="number"],
+  select,
+  button {
+    font-size: 14px;
+  }
+
+  .format-buttons,
+  .paper-type-buttons,
+  .quantity-buttons {
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  }
+}
