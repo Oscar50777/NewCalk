@@ -1,16 +1,326 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Калькулятор себестоимости</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="styles/main.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
-  <!-- Весь ваш текущий HTML -->
-  <!-- Здесь будет весь ваш интерфейс из Pasted_Text_1750926569281.txt -->
+<h2>Калькулятор себестоимости по форматам бумаги</h2>
 
-  <!-- Подключаем точку входа -->
-  <script type="module" src="scripts/app.js"></script>
+<!-- Блок с продукцией -->
+<div id="productTypeButtons">
+  <button type="button" onclick="selectProductType(this)" data-type="Визитки">Визитки</button>
+  <button type="button" onclick="selectProductType(this)" data-type="Буклеты">Буклеты</button>
+  <button type="button" onclick="selectProductType(this)" data-type="Листовки">Листовки</button>
+  <button type="button" onclick="selectProductType(this)" data-type="Флаеры">Флаеры</button>
+  <button type="button" onclick="selectProductType(this)" data-type="Календари">Календари</button>
+  <button type="button" onclick="selectProductType(this)" data-type="Плакаты">Плакаты</button>
+  <button type="button" onclick="selectProductType(this)" data-type="Папки">Папки</button>
+  <button type="button" onclick="selectProductType(this)" data-type="Пакеты">Пакеты</button>
+  <button type="button" onclick="selectProductType(this)" data-type="Открытки">Открытки</button>
+  <button type="button" onclick="selectProductType(this)" data-type="Блокноты">Блокноты</button>
+  <button type="button" onclick="selectProductType(this)" data-type="Наклейки бумажные">Наклейки бумажные</button>
+  <button type="button" onclick="selectProductType(this)" data-type="Бланки">Бланки</button>
+  <button type="button" onclick="selectProductType(this)" data-type="Карточки">Карточки</button>
+  <button type="button" onclick="selectProductType(this)" data-type="Бирки">Бирки</button>
+  <button type="button" onclick="selectProductType(this)" data-type="Хенгеры">Хенгеры</button>
+  <button type="button" onclick="selectProductType(this)" data-type="Дипломы">Дипломы</button>
+  <button type="button" onclick="selectProductType(this)" data-type="Блокнот Обложка">Блокнот Обложка</button>
+  <button type="button" onclick="selectProductType(this)" data-type="Пакет А4">Пакет А4</button>
+  <button type="button" onclick="selectProductType(this)" data-type="Пакет А3">Пакет А3</button>
+  <!-- Кнопка Прайс-лист -->
+  <button onclick="generatePriceListByFormatsWithSellingPrice()" style="margin-top: 20px;"> Прайс </button>
+</div>
+
+<!-- Сообщение -->
+<div id="statusMessage"></div>
+
+<!-- Запрос клиента -->
+<div style="margin-bottom: 15px;">
+  <label>Запрос клиента:</label>
+  <textarea id="clientRequestInput" rows="4" style="width: 100%;"></textarea>
+</div>
+
+<!-- Настройка печати -->
+<div style="margin-bottom: 15px;">
+  <button onclick="togglePrintSettings()" id="btnPrint">⚙️ Настройка печати ▼</button>
+  <div id="printSettingsPanel" class="settings-panel">
+    <label>Печать SRA3 (копия)</label><input type="number" id="printCostZ" value="15">
+    <label>Приладка SRA3</label><input type="number" id="setupPrintZ" value="300">
+    <label>Печать B2 (копия)</label><input type="number" id="printCostE" value="50">
+    <label>Приладка B2</label><input type="number" id="setupPrintE" value="500">
+    <label>Офсет А2 (копия)</label><input type="number" id="printCostOffsetA2" value="2">
+    <label>Приладка А2</label><input type="number" id="setupPrintOffsetA2" value="10000">
+  </div>
+</div>
+
+<!-- Послепечатные работы -->
+<div style="margin-bottom: 15px;">
+  <button onclick="togglePostpress()" id="btnPostpress">⚙️ Послепечатные работы ▼</button>
+  <div id="postpressPanel" class="settings-panel">
+    <!-- Резка -->
+    <label><input type="checkbox" id="cuttingEnabled" checked onchange="updateSubFields()"> Резка</label>
+    <div class="sub-field" id="cuttingOptions" style="display:none;">
+      <label>Стоимость резки за лист:</label>
+      <input type="number" id="cuttingCostSetting" value="1" oninput="onInputChange()">
+      <label>Настройка резки:</label>
+      <input type="number" id="setupCutting" value="300" oninput="onInputChange()">
+    </div>
+    <!-- Ламинация -->
+    <label><input type="checkbox" id="laminationEnabled" onchange="updateSubFields()"> Ламинация</label>
+    <div class="sub-field" id="laminationOptions" style="display:none;">
+      <label>Цена ламинации за лист:</label>
+      <input type="number" id="laminationCost" value="12" oninput="onInputChange()">
+      <label>Настройка ламинации:</label>
+      <input type="number" id="setupLamination" value="300" oninput="onInputChange()">
+      <label><input type="radio" name="laminationSides" value="1+0" checked> Односторонняя</label>
+      <label><input type="radio" name="laminationSides" value="1+1"> Двусторонняя</label>
+    </div>
+    <!-- Биговка -->
+    <label><input type="checkbox" id="scoreEnabled" onchange="updateSubFields()"> Биговка</label>
+    <div class="sub-field" id="scoreOptions" style="display:none;">
+      <label>Стоимость одного бига:</label>
+      <input type="number" id="scoreCost" value="2" oninput="onInputChange()">
+      <label>Настройка биговки:</label>
+      <input type="number" id="setupScore" value="300" oninput="onInputChange()">
+      <label>Бигов на изделие:</label>
+      <input type="number" id="scoreCountInput" value="2" oninput="onInputChange()">
+    </div>
+    <!-- Фальцовка -->
+    <label><input type="checkbox" id="foldingEnabled" onchange="updateSubFields()"> Фальцовка</label>
+    <div class="sub-field" id="foldingOptions" style="display:none;">
+      <label>Цена фальцовки за изделие:</label>
+      <input type="number" id="foldingCostSetting" value="1" oninput="onInputChange()">
+      <label>Настройка фальцовки:</label>
+      <input type="number" id="setupFolding" value="300" oninput="onInputChange()">
+    </div>
+    <!-- Вырубка -->
+    <label><input type="checkbox" id="diecutEnabled" onchange="updateSubFields()"> Вырубка</label>
+    <div class="sub-field" id="diecutOptions" style="display:none;">
+      <label>Цена вырубки за изделие:</label>
+      <input type="number" id="diecutCostSetting" value="5" oninput="onInputChange()">
+      <label>Настройка вырубки:</label>
+      <input type="number" id="setupDiecut" value="5000" oninput="onInputChange()">
+      <label>Стоимость штампа:</label>
+      <input type="number" id="diecutStampCostSetting" value="5500" oninput="onInputChange()">
+    </div>
+    <!-- УФ-лак -->
+    <label><input type="checkbox" id="uvLacquerEnabled" onchange="updateSubFields()"> УФ-лак</label>
+    <div class="sub-field" id="uvLacquerOptions" style="display:none;">
+      <label>Цена УФ-лака за лист:</label>
+      <input type="number" id="uvLacquerCostSetting" value="10" oninput="onInputChange()">
+      <label>Настройка УФ-лака:</label>
+      <input type="number" id="setupUvLacquer" value="5000" oninput="onInputChange()">
+    </div>
+    <!-- Тиснение -->
+    <label><input type="checkbox" id="embossingEnabled" onchange="updateSubFields()"> Тиснение</label>
+    <div class="sub-field" id="embossingOptions" style="display:none;">
+      <label>Цена тиснения за изделие:</label>
+      <input type="number" id="embossingCostSetting" value="10" oninput="onInputChange()">
+      <label>Настройка тиснения:</label>
+      <input type="number" id="setupEmbossing" value="4500" oninput="onInputChange()">
+      <label>Стоимость клише:</label>
+      <input type="number" id="embossingKlischeCostSetting" value="2000" oninput="onInputChange()">
+    </div>
+    <!-- Сборка -->
+    <label><input type="checkbox" id="assemblyEnabled" onchange="updateSubFields()"> Сборка</label>
+    <div class="sub-field" id="assemblyOptions" style="display:none;">
+      <label>Цена сборки за изделие:</label>
+      <input type="number" id="assemblyCostSetting" value="5" oninput="onInputChange()">
+      <label>Настройка сборки:</label>
+      <input type="number" id="setupAssembly" value="300" oninput="onInputChange()">
+    </div>
+  </div>
+</div>
+
+<!-- Блок брошюры -->
+<div id="brochureSection" style="margin-top: 20px;">
+  <button onclick="toggleBrochureOptions()" id="btnBrochure">📘 Брошюра ▼</button>
+  <div id="brochureOptions" class="settings-panel" style="display:none;">
+    <div id="brochureFormatButtons" class="format-buttons">
+      <button onclick="selectBrochureFormat(this, 'A6')">А6</button>
+      <button onclick="selectBrochureFormat(this, 'A5')">А5</button>
+      <button onclick="selectBrochureFormat(this, 'A4')">А4</button>
+      <button onclick="selectBrochureFormat(this, '210x210')">210×210</button>
+    </div>
+    <label>Число:</label>
+    <input type="text" id="brochureInput" maxlength="5" oninput="calculateBrochureResult()" style="width:100%;">
+    <label>Результат:</label>
+    <input type="text" id="brochureOutput" readonly style="width:100%; background:#f9f9f9;">
+  </div>
+</div>
+
+<!-- Основная форма -->
+<div class="main-container">
+  <!-- Левая часть -->
+  <div class="left">
+    <label>Ширина (мм):</label>
+    <input type="number" id="width" value="50" oninput="onInputChange();">
+    <label>Высота (мм):</label>
+    <input type="number" id="height" value="90" oninput="onInputChange();">
+
+    <!-- Кнопки форматов -->
+    <div class="format-buttons" id="formatButtons">
+      <button onclick="setFormat('50×90')">50×90</button>
+      <button onclick="setFormat('85×55')">85×55</button>
+      <button onclick="setFormat('90×90')">90×90</button>
+      <button onclick="setFormat('70×100')">70×100</button>
+      <button onclick="setFormat('100×100')">100×100</button>
+      <button onclick="setFormat('99×210')">99×210</button>
+      <button onclick="setFormat('105×148')">А6 (105×148)</button>
+      <button onclick="setFormat('148×210')">А5 (148×210)</button>
+      <button onclick="setFormat('210×297')">А4 (210×297)</button>
+      <button onclick="setFormat('297×420')">А3 (297×420)</button>
+      <button onclick="setFormat('420×594')">А2 (420×594)</button>
+    </div>
+
+    <!-- Тираж -->
+    <label>Тираж:</label>
+    <input type="number" id="quantity" value="1000" oninput="onInputChange();">
+    <div class="quantity-buttons" id="quantityButtons"></div>
+
+    <!-- Цветность -->
+    <label>Цветность:</label>
+    <div class="side-buttons">
+      <button id="btn_4_0" onclick="setSides(1)" class="selected">4+0</button>
+      <button id="btn_4_4" onclick="setSides(2)">4+4</button>
+    </div>
+
+    <!-- Тип бумаги -->
+    <label>Тип бумаги:</label>
+    <select id="paperType" onchange="updatePaperOptions(); onInputChange();">
+      <option value="offset">Офсетная</option>
+      <option value="matt" selected>Мелованная</option>
+      <option value="cardboard">Картон</option>
+      <option value="designer">Дизайнерская</option>
+      <option value="adhesive">Самоклейка</option>
+    </select>
+
+    <!-- Поле для пользовательской стоимости листа -->
+    <div id="customPaperPriceContainer" style="display: none; margin-top: 10px;">
+      <label>Стоимость за 1 лист, руб:</label>
+      <input type="number" id="customPaperPrice" value="100" oninput="onInputChange();">
+      <p class="hint">Для цифровой печати (SRA3, B2) будет использована 1/4 листа, для других форматов - 1/2 листа</p>
+    </div>
+
+    <!-- Плотность -->
+    <label id="paperDensityLabel">Плотность бумаги:</label>
+    <div class="paper-type-buttons" id="paperOptions"></div>
+    <div id="display_paper">Выбрано: Мелованная 300 г/м²</div>
+
+    <!-- Цена за кг -->
+    <label id="paperPricePerKgLabel">Цена бумаги за кг:</label>
+    <input type="number" id="paperPricePerKg" value="300" oninput="onInputChange();">
+  </div>
+
+  <!-- Правая часть -->
+  <div class="right">
+    <table class="result-table" id="resultsBody">
+      <thead>
+        <tr>
+          <th>Формат</th>
+          <th>NxN</th>
+          <th>Листов</th>
+          <th>Бум</th>
+          <th>Печать</th>
+          <th>Рез</th>
+          <th>Лам</th>
+          <th>Биг</th>
+          <th>Фальц.</th>
+          <th>Выр</th>
+          <th>УФ</th>
+          <th>Тисн</th>
+          <th>Сбор</th>
+          <th id="totalHeader">Итого</th>
+        </tr>
+      </thead>
+      <tbody id="resultsTable">
+        <tr><td colspan="14">Нажмите «Рассчитать» для вывода результата</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Наценка -->
+<div style="margin-top: 15px;">
+  <label>Наценка (%):</label>
+  <input type="number" id="markupPercent" value="20" oninput="onInputChange()" style="width: 100%;">
+</div>
+
+<!-- Множитель количества -->
+<div style="margin-top: 15px;">
+  <label>Количество (множитель):</label>
+  <div class="multiplier-control">
+    <button type="button" onclick="changeMultiplier(-1)">-</button>
+    <input type="number" id="quantityMultiplier" value="1" min="1" oninput="onMultiplierChange()">
+    <button type="button" onclick="changeMultiplier(1)">+</button>
+  </div>
+</div>
+
+<!-- Кнопка копирования -->
+<button onclick="copyToClipboard()" style="margin-top: 10px;">💾 Копировать в буфер</button>
+<input type="hidden" id="densityInput" value="300">
+
+<!-- Сохранённые результаты -->
+<div class="saved-list">
+  <h3>Себестоимость</h3>
+  <p id="savedMessage_cost">Пока нет данных</p>
+  <div id="savedCalculations_cost"></div>
+</div>
+<div class="saved-list">
+  <h3>Цена продажи</h3>
+  <p id="savedMessage_price">Пока нет данных</p>
+  <div id="savedCalculations_price"></div>
+</div>
+<div class="saved-list">
+  <h3>Прибыль</h3>
+  <p id="savedMessage_profit">Пока нет данных</p>
+  <div id="savedCalculations_profit"></div>
+</div>
+
+<!-- Константы -->
+<div style="margin-top: 30px; border-top: 2px solid #ccc; padding-top: 20px;">
+  <h3>🔧 Константы для расчётов</h3>
+  <div style="margin-bottom: 20px;">
+    <h4>📄 Стоимость бумаги за кг</h4>
+    <ul>
+      <li><strong>Офсетная:</strong> 125 руб./кг</li>
+      <li><strong>Мелованная:</strong> 135 руб./кг (до 200 г/м²), 155 руб./кг (свыше)</li>
+      <li><strong>Картон:</strong> 160 руб./кг</li>
+      <li><strong>Дизайнерская:</strong> стоимость указывает пользователь</li>
+      <li><strong>Самоклейка:</strong> стоимость указывает пользователь</li>
+    </ul>
+  </div>
+  <div style="margin-bottom: 20px;">
+    <h4>🖨️ Стоимость печати</h4>
+    <ul>
+      <li><strong>SRA3 (цифра):</strong> 15 руб./лист + приладка 300 руб.</li>
+      <li><strong>B2 (цифра):</strong> 50 руб./лист + приладка 500 руб.</li>
+      <li><strong>А2 (офсет):</strong> 2 руб./лист + приладка 10 000 руб.</li>
+    </ul>
+  </div>
+  <div style="margin-bottom: 20px;">
+    <h4>✂️ Послепечатные работы</h4>
+    <ul>
+      <li><strong>Резка:</strong> 1 руб./лист + настройка 300 руб.</li>
+      <li><strong>Ламинация:</strong> 12 руб./лист + настройка 300 руб.</li>
+      <li><strong>Биговка:</strong> 2 руб./биг + настройка 300 руб.</li>
+      <li><strong>Фальцовка:</strong> 1 руб./изделие + настройка 300 руб.</li>
+      <li><strong>Вырубка:</strong> 5 руб./изделие + настройка 5000 руб. + штамп 5500 руб.</li>
+      <li><strong>УФ-лак:</strong> 10 руб./лист + настройка 5000 руб.</li>
+      <li><strong>Тиснение:</strong> 10 руб./изделие + настройка 4500 руб. + клише 2000 руб.</li>
+      <li><strong>Сборка:</strong> 5 руб./изделие + настройка 300 руб.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Подключение скрипта -->
+<script type="module" src="scripts/app.js"></script>
+
+<!-- Для межоконного сообщения -->
+<div id="priceListWithPriceContainer" style="margin-top: 30px;"></div>
+
 </body>
 </html>
